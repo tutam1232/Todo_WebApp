@@ -13,3 +13,5 @@ function AddTask({onAddTask}){
         </>
     )
 }
+
+export default AddTask;
