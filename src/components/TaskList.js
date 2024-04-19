@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useContext } from "react";
 import Task from "./Task.js"
+import { TasksContext } from "../contexts/TasksContext.js";
 
-function TaskList({tasks, onEditTask, onDeleteTask}){
+function TaskList(){
     
+    const tasks = useContext(TasksContext)
+
     return(
         tasks.map(task => (
-            <Task  task={task} key={task.id} onEditTask={onEditTask} onDeleteTask={onDeleteTask}/>
+            <Task task={task} key={task.id}/>
         ))
     )
 

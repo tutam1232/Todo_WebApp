@@ -1,38 +1,24 @@
 import TaskList from "./components/TaskList.js"
 import AddTask from "./components/AddTask.js"
+import { TasksContext, TasksDispatcherContext } from './contexts/TasksContext.js';
+
 import { useReducer } from "react";
 
 function App() {
     const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
 
-    function handleAddTask(text) {
-        dispatch({
-            type: 'add_task',
-            id: nextId++,
-            name: text
-        });
-    }
-
-    function handleDeleteTask(id) {
-        dispatch({
-            type: 'delete_task',
-            id: id++
-        });
-    }
-
-    function handleEditTask(id, text) {
-        dispatch({
-            type: 'edit_task',
-            id: id,
-            name: text
-        });
-    }
 
     return (
         <>
             <h1>Todo List</h1>
-            <AddTask onAddTask={handleAddTask} />
-            <TaskList tasks={tasks} onEditTask={handleEditTask} onDeleteTask={handleDeleteTask} />
+            <TasksContext.Provider value={tasks}>
+                <TasksDispatcherContext.Provider value={dispatch}>
+
+                    <AddTask />
+                    <TaskList />
+
+                </TasksDispatcherContext.Provider>
+            </TasksContext.Provider>
         </>
     );
 }
@@ -62,7 +48,6 @@ function tasksReducer(tasks, action) {
 }
 
 
-let nextId = 3;
 const initialTasks = [
     { id: 0, name: 'Philosopher’s Path' },
     { id: 1, name: 'Visit the temple' },

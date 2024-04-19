@@ -1,24 +1,36 @@
 import { useState } from "react";
+import { useContext } from "react";
+import { TasksDispatcherContext } from "../contexts/TasksContext";
 
-function Task({task, onEditTask, onDeleteTask}){
+
+function Task({ task }) {
     const [isEditting, setIsEditting] = useState(false);
     const [taskName, setTaskName] = useState(task.name);
 
-    return(
-        <div>
-            {isEditting ? 
-                <input value={taskName}  onChange={(e) => setTaskName(e.target.value)}></input>: //luu y cho nay?
-                <span key={task.id}>{taskName}</span>}
-            
-            {isEditting ? 
-            <button onClick={() => {
-                setIsEditting(false);
-                onEditTask(task.id, taskName)
-                }}>Save</button>:
-            <button onClick={() => setIsEditting(true)}>Edit</button>}
-            
+    const dispatch = useContext(TasksDispatcherContext)
 
-            <button onClick={() => onDeleteTask(task.id)}>Delete</button>
+    return (
+        <div>
+            {isEditting ?
+                <input value={taskName} onChange={(e) => setTaskName(e.target.value)}></input> : //luu y cho nay?
+                <span key={task.id}>{taskName}</span>}
+
+            {isEditting ?
+                <button onClick={() => {
+                    setIsEditting(false);
+                    dispatch({
+                        type: 'edit_task',
+                        id: task.id,
+                        name: taskName
+                    });
+                }}>Save</button> :
+                <button onClick={() => setIsEditting(true)}>Edit</button>}
+
+
+            <button onClick={() => dispatch({
+                type: 'delete_task',
+                id: task.id
+            })}>Delete</button>
         </div>
     )
 }
