@@ -12,6 +12,7 @@ function Task({ task }) {
     const dispatch = useTasksDispatch();
 
     return (
+        
         <div className={styles.task} style={{display:"flex"}}>
             <div style={{width: "80%"}}>
                 {isEditting ?

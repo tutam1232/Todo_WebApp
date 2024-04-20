@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
 let nextId = 3;
 
