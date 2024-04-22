@@ -45,6 +45,13 @@ function tasksReducer(tasks, action) {
                 }
             })
         }
+        case 'reorder_task': {
+            let newTasks = Array.from(tasks)
+            const draggedTask = newTasks[action.dragIndex]
+            newTasks.splice(action.dragIndex, 1)
+            newTasks.splice(action.dropIndex, 0, draggedTask)
+            return newTasks
+        }
         default: {
             throw Error('Unknown action: ' + action.type);
         }
