@@ -1,14 +1,15 @@
-import TaskList from "./components/TaskList.js"
-import AddTask from "./components/AddTask.js"
-import { useTasksDispatch } from "./contexts/TasksContext.js";
+import TaskList from "../components/TaskList.js"
+import AddTask from "../components/AddTask.js"
+import { useTasksDispatch } from "../contexts/TasksContext.js";
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 
 
-function App() {
+function Todo() {
 
+    console.log("[Todo]")
     
     let dispatch = useTasksDispatch();
-    
+
     function handleOnDragEnd(result) {
 
         if (!result.destination) return;
@@ -22,7 +23,7 @@ function App() {
 
     return (
         <>
-            <h1 style={{ textAlign: "center", color: "white", marginTop: "5%" }}>TODO LIST</h1>
+            <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>TODO LIST</h1>
             
                 <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><AddTask /></div>
                 <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -49,4 +50,4 @@ function App() {
 //reference drag n drop: https://medium.com/codex/how-to-implement-a-simple-drag-and-drop-using-create-react-app-and-react-beautiful-dnd-4e6e57a2299f
 
 
-export default App;
+export default Todo;

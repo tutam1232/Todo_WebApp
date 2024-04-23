@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState,memo } from "react";
 import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 
 
-function Task({ task }) {
+const Task = memo(function Task({ task }) {
+    console.log("[Task]")
     const [isEditting, setIsEditting] = useState(false);
     const [taskName, setTaskName] = useState(task.name);
 
@@ -40,6 +41,6 @@ function Task({ task }) {
             </div>
         </div>
     )
-}
+})
 
 export default Task;

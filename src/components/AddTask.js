@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { useTasksDispatch } from "../contexts/TasksContext";
+import { useTasksDispatch, useTasks } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
-let nextId = 3;
 
 function AddTask(){
+    console.log("[addTask]")
     const [text, setText] = useState('');
-    let dispatch = useTasksDispatch();
+
+    const dispatch = useTasksDispatch();
+    const tasks = useTasks()
 
     return(
         <div>
@@ -17,7 +19,7 @@ function AddTask(){
                 
                 dispatch({
                     type: 'add_task',
-                    id: nextId++,
+                    id: tasks.length+1,
                     name: text
                 });
                 setText('');

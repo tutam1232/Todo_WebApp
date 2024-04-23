@@ -43,3 +43,18 @@
     color: white;
     font-weight:bolder;
 }
+
+.navbar{
+    background-color: #232a46;
+    padding: 10px;
+    border-radius: 20px;
+    margin: 15px;
+    display: flex;
+    justify-content: space-around;
+    
+}
+
+.link{
+    color: white;
+    text-decoration: none;
+}
