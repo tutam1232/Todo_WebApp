@@ -24,7 +24,7 @@ function TaskList() {
     useEffect(() => {
 
         fetchTasks(API_URL);
-        console.log("fetched")
+        console.log("fetched tasks")
 
     },[])
 
