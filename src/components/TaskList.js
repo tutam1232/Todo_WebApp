@@ -2,12 +2,13 @@ import Task from "./Task.js"
 import { useTasks, useTasksDispatch } from "../contexts/TasksContext.js";
 import styles from '../modules/style.module.css';
 import { Draggable } from "react-beautiful-dnd";
-import { useEffect,useMemo } from "react";
+import { useEffect } from "react";
 
 const API_URL = "https://662674f6052332d55322eed8.mockapi.io/gettodo"
 
 function TaskList() {
 
+    console.log("[taskList]")
     const dispatch = useTasksDispatch();
     const tasks = useTasks();
     

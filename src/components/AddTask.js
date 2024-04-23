@@ -1,4 +1,4 @@
-import { useState,useMemo } from "react";
+import { useState } from "react";
 import { useTasksDispatch, useTasks } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,6 +6,7 @@ import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
 
 function AddTask(){
+    console.log("[addTask]")
     const [text, setText] = useState('');
 
     const dispatch = useTasksDispatch();
