@@ -13,9 +13,7 @@ import NoPage from './pages/NoPage';
 
 export default function App() {
 
-  console.log("[App]")
-
-  
+  console.log("[App]")  
 
   return (
     <BrowserRouter>

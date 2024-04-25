@@ -4,8 +4,7 @@ import { useEffect } from "react";
 import styles from "../modules/style.module.css";
 import { useBlogs, useBlogsDispatch } from "../contexts/BlogsContext";
 import Blog from "../components/Blog";
-
-const API_URL = 'https://662674f6052332d55322eed8.mockapi.io/getblog';
+const API_URL = process.env.REACT_APP_API_URL
 
 const Blogs = () => {
     console.log("[Blogs]")
@@ -13,11 +12,24 @@ const Blogs = () => {
     const dispatch = useBlogsDispatch();
 
     const fetchBlogs = async function (API_URL) {
-        const fetched_blog = await fetch(API_URL).then(res => res.json()).catch(err => console.log(err));
-        dispatch({
-            type: 'set_blogs',
-            blogs: fetched_blog
-        })
+        //fetch with method get
+        let fetched_blog = await fetch(API_URL + '/getblogs',{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })    
+
+        let fetched_blogJSON = await fetched_blog.json();
+
+        if(fetched_blog.ok){
+            dispatch({
+                type: 'set_blogs',
+                blogs: fetched_blogJSON
+            })
+        }
+
+        //TODO: fix if fetched_blog not ok
     }
 
     useEffect(() => {
@@ -41,7 +53,7 @@ const Blogs = () => {
             
             <Routes>
                 {blogs.map(blog => (
-                    <Route key={blog.id} path={blog.id} element={<Blog id={blog.id} />} />
+                    <Route key={blog.id} path={blog.id.toString()} element={<Blog id={blog.id} />} />
                 ))}
             </Routes>
         </>

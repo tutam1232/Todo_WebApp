@@ -16,4 +16,10 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.on('/').render('welcome')
+Route.get('/gettodos', 'TodoController.getTodos');
+Route.post('/addtodo', 'TodoController.addTodo');
+Route.put('/updatetodo/:id', 'TodoController.updateTodo');
+Route.delete('/deletetodo/:id', 'TodoController.deleteTodo');
+
+Route.get('/getblogs', 'BlogController.getBlogs');
+Route.get('/getblogs/:id', 'BlogController.getBlog');
