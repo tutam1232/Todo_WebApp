@@ -17,9 +17,9 @@ class TodoController {
 
     async addTodo({ request, response }) {
         try {
-            let {id,name} = request.body;
-            await this.todoModel.add(id,name)
-            return response.status(200).json({ message: 'complete' });
+            let {name} = request.body;
+            let id = await this.todoModel.add(name)
+            return response.status(200).json({ id:id, message: 'complete' });
         } catch (error) {
             return response.status(500).json({ message: 'server error' })
         }

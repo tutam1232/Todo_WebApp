@@ -29,15 +29,23 @@ function TaskList() {
                 type: 'set_tasks',
                 tasks: fetched_todoJSON
             })
+
+            return;
+        }
+        else{
+            throw new Error("fetch tasks failed")
         }
 
-        //TODO: fix if fetched_todo not ok
     }
 
     useEffect(() => {
 
-        fetchTodos(API_URL);
-        console.log("fetched tasks")
+        fetchTodos(API_URL).then(() => {
+            console.log("fetched tasks")
+        }).catch(err => {
+            console.log(err)
+        })
+        
 
     },[])
 

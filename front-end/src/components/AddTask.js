@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTasksDispatch, useTasks } from "../contexts/TasksContext";
+import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +11,6 @@ function AddTask() {
     const [text, setText] = useState('');
 
     const dispatch = useTasksDispatch();
-    const tasks = useTasks()
 
     return (
         <div>
@@ -23,17 +22,21 @@ function AddTask() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        id: tasks.length + 1,
                         name: text
                     })
                 })
-                if (result.ok)
+                if (result.ok) {
+                    let resultJSON = await result.json();
                     dispatch({
                         type: 'add_task',
-                        id: tasks.length + 1,
+                        id: resultJSON.id,
                         name: text
                     });
-                setText('');
+                    setText('');
+                }
+                else{
+                    console.log('add task failed')
+                }
             }}><FontAwesomeIcon icon={faPlus} /></button>
         </div>
     )

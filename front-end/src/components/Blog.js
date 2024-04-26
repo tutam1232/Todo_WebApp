@@ -6,7 +6,6 @@ const Blog = ({ id }) => {
   const [blog, setBlog] = useState(null);
 
   const fetchBlog = async function (API_URL) {
-    //fetch with method get
     let fetched_blog = await fetch(API_URL + '/getblogs/' + id.toString(), {
       method: 'GET',
       headers: {
@@ -19,14 +18,17 @@ const Blog = ({ id }) => {
     if (fetched_blog.ok) {
       return fetched_blogJSON
     }
-
-    //TODO: handle not ok
+    else{
+      throw new Error("fetch blog failed")
+    }
   }
 
   useEffect(() => {
     fetchBlog(API_URL).then(fetchedBlog => {
       setBlog(fetchedBlog[0]);
       console.log("fetched blog");
+    }).catch(err => {
+      console.log(err)
     });
   }, [id])
 

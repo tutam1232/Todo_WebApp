@@ -13,28 +13,35 @@ const Blogs = () => {
 
     const fetchBlogs = async function (API_URL) {
         //fetch with method get
-        let fetched_blog = await fetch(API_URL + '/getblogs',{
+        let fetched_blog = await fetch(API_URL + '/getblogs', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             }
-        })    
+        })
 
         let fetched_blogJSON = await fetched_blog.json();
 
-        if(fetched_blog.ok){
+        if (fetched_blog.ok) {
             dispatch({
                 type: 'set_blogs',
                 blogs: fetched_blogJSON
             })
+            return;
+        }
+        else {
+            throw new Error("fetch blogs failed")
         }
 
-        //TODO: fix if fetched_blog not ok
     }
 
     useEffect(() => {
-        fetchBlogs(API_URL);
-        console.log("fetched blogs")
+        fetchBlogs(API_URL).then(() => {
+            console.log("fetched blogs")
+        }).catch(err => {
+            console.log(err)
+        })
+
     }, [])
 
     return (
@@ -50,7 +57,7 @@ const Blogs = () => {
                 </div>
             </div>
 
-            
+
             <Routes>
                 {blogs.map(blog => (
                     <Route key={blog.id} path={blog.id.toString()} element={<Blog id={blog.id} />} />

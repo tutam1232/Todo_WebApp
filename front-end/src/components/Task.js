@@ -14,7 +14,6 @@ const Task = memo(function Task({ task }) {
     const dispatch = useTasksDispatch();
 
     return (
-
         <div className={styles.task} style={{ display: "flex" }}>
             <div style={{ width: "80%" }}>
                 {isEditting ?
@@ -36,14 +35,18 @@ const Task = memo(function Task({ task }) {
                             })
                         })
 
-                        if (result.ok)
+                        if (result.ok) {
                             dispatch({
                                 type: 'edit_task',
                                 id: task.id,
                                 name: taskName
                             });
+                        }
+                        else {
+                            console.log('edit failed')
+                        }
 
-                        //TODO: if result not ok?
+
                     }}><FontAwesomeIcon icon={faFloppyDisk} /></button> :
                     <button className={styles.button} onClick={() => setIsEditting(true)}><FontAwesomeIcon icon={faPenToSquare} /></button>}
 
@@ -57,11 +60,16 @@ const Task = memo(function Task({ task }) {
                         }
                     })
 
-                    if (result.ok)
+                    if (result.ok) {
                         dispatch({
                             type: 'delete_task',
                             id: task.id
                         })
+                    }
+                    else{
+                        console.log('delete failed')
+                    }
+                    
                 }}><FontAwesomeIcon icon={faX} style={{ color: "red" }} /></button>
             </div>
         </div >
