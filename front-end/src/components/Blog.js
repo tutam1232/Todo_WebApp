@@ -25,7 +25,7 @@ const Blog = ({ id }) => {
 
   useEffect(() => {
     fetchBlog(API_URL).then(fetchedBlog => {
-      setBlog(fetchedBlog[0]);
+      setBlog(fetchedBlog);
       console.log("fetched blog");
     }).catch(err => {
       console.log(err)

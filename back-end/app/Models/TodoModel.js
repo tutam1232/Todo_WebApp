@@ -2,7 +2,7 @@ const Database = use('Database')
 
 class TodoModel {
     async getAll() {
-        let todos = await Database.table('todo')
+        let todos = await Database.table('todo').orderBy('index', 'asc')
         return todos
     }
 
@@ -17,6 +17,16 @@ class TodoModel {
 
     async delete(id) {
         await Database.table('todo').where('id', id).delete()
+    }
+
+    async reorder(id1, id2){
+        let todo1 = await Database.table('todo').where('id', id1).first()
+        let todo2 = await Database.table('todo').where('id', id2).first()
+        let index1 = todo1.index
+        let index2 = todo2.index
+
+        await Database.table('todo').where('id', id1).update('index', index2)
+        await Database.table('todo').where('id', id2).update('index', index1)
     }
 }
 

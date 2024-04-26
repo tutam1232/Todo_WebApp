@@ -14,7 +14,6 @@ function TaskList() {
     
 
     const fetchTodos = async function (API_URL) {
-        //fetch with method get
         let fetched_todo = await fetch(API_URL + '/gettodos',{
             method: 'GET',
             headers: {

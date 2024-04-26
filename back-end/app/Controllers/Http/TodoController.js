@@ -46,6 +46,17 @@ class TodoController {
             return response.status(500).json({ message: 'server error' })
         }
     }
+
+    async reorderTodo({ request, response }) {
+        try {
+            let id1 = request.params.id1;
+            let id2 = request.params.id2;
+            await this.todoModel.reorder(id1, id2)
+            return response.status(200).json({message: 'complete'});
+        } catch (error) {
+            return response.status(500).json({ message: 'server error' })
+        }
+    }
 }
 
 module.exports = TodoController

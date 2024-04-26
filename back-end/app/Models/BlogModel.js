@@ -7,7 +7,7 @@ class BlogModel {
     }
 
     getById = async (id) => {
-        let blog = await Database.table('blog').where('id', id)
+        let blog = await Database.table('blog').where('id', id).first()
         return blog
     }
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,7 +6,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const API_URL = process.env.REACT_APP_API_URL
 
-function AddTask() {
+const AddTask = memo(function AddTask() {
     console.log("[addTask]")
     const [text, setText] = useState('');
 
@@ -40,6 +40,6 @@ function AddTask() {
             }}><FontAwesomeIcon icon={faPlus} /></button>
         </div>
     )
-}
+});
 
 export default AddTask;

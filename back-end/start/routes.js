@@ -20,6 +20,7 @@ Route.get('/gettodos', 'TodoController.getTodos');
 Route.post('/addtodo', 'TodoController.addTodo');
 Route.put('/updatetodo/:id', 'TodoController.updateTodo');
 Route.delete('/deletetodo/:id', 'TodoController.deleteTodo');
+Route.put('/reorder/:id1/:id2', 'TodoController.reorderTodo');
 
 Route.get('/getblogs', 'BlogController.getBlogs');
 Route.get('/getblogs/:id', 'BlogController.getBlog');
