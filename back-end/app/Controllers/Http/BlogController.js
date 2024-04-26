@@ -13,7 +13,6 @@ class BlogController {
             let blogs = await this.blogModel.getAll()
             return response.status(200).json(blogs)
         } catch (error) {
-            console.log(error)
             return response.status(500).json({ message: 'server error' })
         }
     }
