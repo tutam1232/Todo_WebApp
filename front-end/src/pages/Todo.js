@@ -22,7 +22,7 @@ function Todo() {
     }
 
     return (
-        <>
+        <>      
             <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>TODO LIST</h1>
             
                 <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><AddTask /></div>

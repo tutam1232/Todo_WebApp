@@ -1,28 +1,42 @@
 import { useState } from "react";
-import { useTasksDispatch, useTasks } from "../contexts/TasksContext";
+import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+const API_URL = process.env.REACT_APP_API_URL
 
-function AddTask(){
+function AddTask() {
     console.log("[addTask]")
     const [text, setText] = useState('');
 
     const dispatch = useTasksDispatch();
-    const tasks = useTasks()
 
-    return(
+    return (
         <div>
-            <input type="text" onChange={(e) => setText(e.target.value)} value={text} className={styles.input}/>
-            <button className={styles.addtask} onClick={() => {
-                
-                dispatch({
-                    type: 'add_task',
-                    id: tasks.length+1,
-                    name: text
-                });
-                setText('');
+            <input type="text" onChange={(e) => setText(e.target.value)} value={text} className={styles.input} />
+            <button className={styles.addtask} onClick={async () => {
+                let result = await fetch(API_URL + '/addtodo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: text
+                    })
+                })
+                if (result.ok) {
+                    let resultJSON = await result.json();
+                    dispatch({
+                        type: 'add_task',
+                        id: resultJSON.id,
+                        name: text
+                    });
+                    setText('');
+                }
+                else{
+                    console.log('add task failed')
+                }
             }}><FontAwesomeIcon icon={faPlus} /></button>
         </div>
     )

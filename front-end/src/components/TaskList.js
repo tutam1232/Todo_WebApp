@@ -4,7 +4,7 @@ import styles from '../modules/style.module.css';
 import { Draggable } from "react-beautiful-dnd";
 import { useEffect } from "react";
 
-const API_URL = "https://662674f6052332d55322eed8.mockapi.io/gettodo"
+const API_URL = process.env.REACT_APP_API_URL
 
 function TaskList() {
 
@@ -13,18 +13,39 @@ function TaskList() {
     const tasks = useTasks();
     
 
-    const fetchTasks = async function(API_URL){
-        let tasks_fetched = await fetch(API_URL).then(res => res.json()).catch(err => console.log(err));
-        dispatch({
-            type: 'set_tasks',
-            tasks: tasks_fetched
-        })
+    const fetchTodos = async function (API_URL) {
+        //fetch with method get
+        let fetched_todo = await fetch(API_URL + '/gettodos',{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })    
+
+        let fetched_todoJSON = await fetched_todo.json();
+
+        if(fetched_todo.ok){
+            dispatch({
+                type: 'set_tasks',
+                tasks: fetched_todoJSON
+            })
+
+            return;
+        }
+        else{
+            throw new Error("fetch tasks failed")
+        }
+
     }
 
     useEffect(() => {
 
-        fetchTasks(API_URL);
-        console.log("fetched tasks")
+        fetchTodos(API_URL).then(() => {
+            console.log("fetched tasks")
+        }).catch(err => {
+            console.log(err)
+        })
+        
 
     },[])
 
