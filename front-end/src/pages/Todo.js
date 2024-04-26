@@ -20,6 +20,13 @@ function Todo() {
         const dragIdDatabase = draggedTask.id;
         const dropIdDatabase = previousDropTask.id;
 
+
+        dispatch({
+            type: 'reorder_task',
+            dragIndex: result.source.index,
+            dropIndex: result.destination.index
+        })
+
         let resultFetch = await fetch(API_URL + '/reorder' + `/${dragIdDatabase}` + `/${dropIdDatabase}`, {
             method: 'PUT',
             headers: {
@@ -27,14 +34,13 @@ function Todo() {
             },
         })
 
-        if (resultFetch.ok) {
+        if (!resultFetch.ok) {
             dispatch({
                 type: 'reorder_task',
                 dragIndex: result.source.index,
                 dropIndex: result.destination.index
             })
-        }
-        else {
+
             console.log('reorder fail')
         }
 
