@@ -1,19 +1,22 @@
-import { createContext, useContext, useReducer,useCallback } from "react";
+import { createContext, useContext, useReducer, useCallback } from "react";
 
 const TasksContext = createContext([]);
 const TasksDispatcherContext = createContext(null);
 
+
 function TasksProvider({ children }) {
     const tasksReducer = useCallback((tasks, action) => {
-        console.log("reducer")
+        console.log("[reducer]")
         switch (action.type) {
             case 'add_task': {
+
                 return [...tasks, { id: action.id, name: action.name }]
             }
             case 'delete_task': {
                 return tasks.filter(task => task.id != action.id)
             }
             case 'edit_task': {
+
                 return tasks.map(task => {
                     if (task.id == action.id) {
                         return { ...task, name: action.name };
@@ -22,6 +25,7 @@ function TasksProvider({ children }) {
                         return task
                     }
                 })
+
             }
             case 'reorder_task': {
                 let newTasks = Array.from(tasks)
@@ -30,14 +34,14 @@ function TasksProvider({ children }) {
                 newTasks.splice(action.dropIndex, 0, draggedTask)
                 return newTasks
             }
-            case 'set_tasks':{
+            case 'set_tasks': {
                 return action.tasks
             }
             default: {
                 throw Error('Unknown action: ' + action.type);
             }
         }
-    },[])
+    }, [])
 
     const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
 
@@ -62,7 +66,7 @@ function useTasksDispatch() {
     return useContext(TasksDispatcherContext);
 }
 
-export { TasksProvider, useTasks, useTasksDispatch};
+export { TasksProvider, useTasks, useTasksDispatch };
 
 
 

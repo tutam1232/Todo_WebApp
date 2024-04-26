@@ -131,8 +131,8 @@ module.exports = {
   | routes does have a valid token to execute an action.
   |
   */
-  csrf: {
-    enable: true,
+  csrf: { //FIXING POST ISSUE: https://github.com/adonisjs/core/issues/623
+    enable: false,
     methods: ['POST', 'PUT', 'DELETE'],
     filterUris: [],
     cookieOptions: {

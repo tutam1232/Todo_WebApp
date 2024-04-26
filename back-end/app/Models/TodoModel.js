@@ -1,21 +1,21 @@
 const Database = use('Database')    
 
 class TodoModel {
-    getAll = async () => {
-        let todos = await Database.table('todos')
+    async getAll() {
+        let todos = await Database.table('todo')
         return todos
     }
 
-    add = async (name) => {
-        await Database.insert({name: name}).into('todos').returning('id')
+    async add (id,name) {
+        await Database.insert({id:id,name: name}).into('todo').returning('id')
     }
 
-    updateTodo = async (id, name) => {
-        await Database.table('todos').where('id', id).update('name', name)
+    async update(id, name) {
+        await Database.table('todo').where('id', id).update('name', name)
     }
 
-    deleteTodo = async (id) => {
-        await Database.table('todos').where('id', id).delete()
+    async delete(id) {
+        await Database.table('todo').where('id', id).delete()
     }
 }
 
