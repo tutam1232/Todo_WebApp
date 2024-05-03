@@ -14,7 +14,7 @@ class UserModel {
         let user = await Database.table('user').where('username', username).first()
 
         if(!user)
-            throw new Error('username existed')
+            throw new Error('user not existed')
 
         return user
     }

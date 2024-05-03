@@ -3,6 +3,7 @@ import { useTasksDispatch } from "../contexts/TasksContext";
 import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import useLogout from "../hooks/useLogout";
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -10,6 +11,7 @@ const Task = memo(function Task({ task }) {
     console.log("[Task]")
     const [isEditting, setIsEditting] = useState(false);
     const [taskName, setTaskName] = useState(task.name);
+    const logout = useLogout();
 
     const dispatch = useTasksDispatch();
 
@@ -18,7 +20,11 @@ const Task = memo(function Task({ task }) {
             <div style={{ width: "80%" }}>
                 {isEditting ?
                     <input value={taskName} onChange={(e) => setTaskName(e.target.value)}></input> : //luu y cho nay?
-                    <span key={task.id}>{taskName}</span>}
+                    < >
+                        <span key={task.id}>{taskName}</span>
+                        <br />
+                        <span style={{fontWeight: 'lighter'}}>user: {task.username}</span>
+                    </>}
             </div>
 
             <div style={{ width: "25%" }}>
@@ -28,7 +34,8 @@ const Task = memo(function Task({ task }) {
                         let result = await fetch(API_URL + '/updatetodo/' + task.id, {
                             method: 'PUT',
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
                             },
                             body: JSON.stringify({
                                 name: taskName
@@ -43,6 +50,8 @@ const Task = memo(function Task({ task }) {
                             });
                         }
                         else {
+                            if (result.status === 401)
+                                logout();
                             console.log('edit failed')
                         }
 
@@ -56,7 +65,8 @@ const Task = memo(function Task({ task }) {
                     let result = await fetch(API_URL + '/deletetodo/' + task.id, {
                         method: 'DELETE',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
                         }
                     })
 
@@ -67,6 +77,8 @@ const Task = memo(function Task({ task }) {
                         })
                     }
                     else{
+                        if (result.status === 401)
+                            logout();
                         console.log('delete failed')
                     }
                     

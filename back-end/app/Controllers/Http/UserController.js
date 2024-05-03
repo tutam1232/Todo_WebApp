@@ -2,6 +2,7 @@
 const UserModel = use('App/Models/UserModel')
 const bcrypt = use('bcrypt');
 const Env = use('Env')
+const jwt = require('jsonwebtoken');
 
 class UserController {
     constructor(props) {
@@ -31,7 +32,8 @@ class UserController {
             if (!checkPassword) {
                 return response.status(401).json({ message: 'wrong password' })
             }
-            const token = await auth.generate({id: username})
+            //const token = await auth.generate({id: username})
+            const token = jwt.sign({ id: username }, Env.get('APP_KEY'), { expiresIn: '10m' });
             return response.status(200).json({ accessToken: token, username: username})
 
         } catch (error) {

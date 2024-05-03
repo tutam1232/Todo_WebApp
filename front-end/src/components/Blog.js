@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import useLogout from "../hooks/useLogout";
+
 const API_URL = process.env.REACT_APP_API_URL
 
 const Blog = ({ id }) => {
   console.log("[Blog]")
   const [blog, setBlog] = useState(null);
+  const logout = useLogout();
 
   const fetchBlog = async function (API_URL) {
     let fetched_blog = await fetch(API_URL + '/getblogs/' + id.toString(), {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
       }
     })
 
@@ -18,7 +22,9 @@ const Blog = ({ id }) => {
     if (fetched_blog.ok) {
       return fetched_blogJSON
     }
-    else{
+    else {
+      if (fetched_blog.status === 401)
+        logout();
       throw new Error("fetch blog failed")
     }
   }
@@ -32,7 +38,7 @@ const Blog = ({ id }) => {
     });
   }, [id])
 
-  return <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>{blog && blog.name }</h1>
+  return <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>{blog && blog.name}</h1>
 };
 
 export default Blog;

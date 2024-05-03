@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import styles from "../modules/style.module.css";
 
 const API_URL = process.env.REACT_APP_API_URL
 
 const Login = () => {
+
+    console.log("[Login]")
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const accessToken = localStorage.getItem('accessToken');
 
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname;
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -28,19 +32,16 @@ const Login = () => {
             });
 
             if (response.ok) {
-                alert('Login successful, redirect to home page in 3 seconds');
 
-                //TODO: redirect to home page in 3 seconds, fix UI to clock down
                 const data = await response.json();
-                const accessToken = data.accessToken?.token;
+                //const accessToken = data.accessToken?.token;
+                const accessToken = data.accessToken;
                 const username = data.username;
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('username', username);
 
 
-                setTimeout(() => {
-                    navigate(from, { replace: true });
-                }, 3000);
+                navigate(from, { replace: true });
             } else {
                 alert('Login failed');
             }
@@ -50,19 +51,21 @@ const Login = () => {
     };
 
     return (
-        <>
-            <h1 style={{ textAlign: 'center', color: 'white' }}>Login</h1>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <form onSubmit={handleLogin} style={{ width: '30%', display: 'flex', flexDirection: 'column' }}>
-                    <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                    <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <button type="submit">Login</button>
-                </form>
-            </div>
-            <div style={{width:'100%', display: 'flex', justifyContent:'center'}}>
-                <Link to="/register" className={styles.link}>Register</Link>
-            </div>
-        </>
+        !accessToken ? 
+            <>
+                <h1 style={{ textAlign: 'center', color: 'white' }}>Login</h1>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <form onSubmit={handleLogin} style={{ width: '30%', display: 'flex', flexDirection: 'column' }}>
+                        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <Link to="/register" className={styles.link}>Register</Link>
+                </div>
+            </>
+         : <Navigate to="/" replace={true} />
     )
 }
 

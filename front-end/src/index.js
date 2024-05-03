@@ -19,15 +19,18 @@ export default function App() {
 
   console.log("[App]")
 
+
   return (
     <BrowserRouter>
       <Routes>
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+        {/* public route */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* private route */}
 
         <Route path="/" element={<Layout />}>
-          
 
 
           <Route element={<PrivateRoute />}>

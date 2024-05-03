@@ -6,8 +6,8 @@ class TodoModel {
         return todos
     }
 
-    async add (name) {
-        let id = await Database.insert({name: name}).into('todo').returning('id')
+    async add (name, username) {
+        let id = await Database.insert({name: name, username: username}).into('todo').returning('id')
         return id
     }
 

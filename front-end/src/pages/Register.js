@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom'
+import { useNavigate, Link, Navigate } from 'react-router-dom'
 import styles from '../modules/style.module.css'
 
 const API_URL = process.env.REACT_APP_API_URL
 
 
 const Register = () => {
+
+  console.log("[Register]")
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const accessToken = localStorage.getItem('accessToken');
 
+  const navigate = useNavigate();
 
 
   const handleRegister = async (e) => {
@@ -29,11 +34,8 @@ const Register = () => {
 
       if (response.ok) {
         alert('Register successful');
-        //TODO: redirect to login in 5 seconds, fix UI to clock down
 
-        setTimeout(() => {
-          return <Navigate to="/login" />
-        }, 3000);
+        navigate('/login');
 
       } else {
         console.log(response)
@@ -46,29 +48,31 @@ const Register = () => {
 
 
   return (
-    <>
-      <h1 style={{ textAlign: 'center', color: 'white' }}>Register</h1>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-        <form onSubmit={handleRegister} style={{ width: '30%', display: 'flex', flexDirection: 'column' }}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Register</button>
-        </form>
-      </div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-        <Link to="/login" className={styles.link}>Login</Link>
-      </div>
-    </>
+    !accessToken ? 
+      <>
+        <h1 style={{ textAlign: 'center', color: 'white' }}>Register</h1>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <form onSubmit={handleRegister} style={{ width: '30%', display: 'flex', flexDirection: 'column' }}>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Register</button>
+          </form>
+        </div>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <Link to="/login" className={styles.link}>Login</Link>
+        </div>
+      </>
+     : <Navigate to="/" replace={true} />
   );
 };
 
