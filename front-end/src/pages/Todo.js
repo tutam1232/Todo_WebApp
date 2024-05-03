@@ -2,6 +2,7 @@ import TaskList from "../components/TaskList.js"
 import AddTask from "../components/AddTask.js"
 import { useTasksDispatch, useTasks } from "../contexts/TasksContext.js";
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import useLogout from "../hooks/useLogout.js";
 const API_URL = process.env.REACT_APP_API_URL
 
 function Todo() {
@@ -10,6 +11,7 @@ function Todo() {
 
     let dispatch = useTasksDispatch();
     let tasks = useTasks()
+    const logout = useLogout();
 
     async function handleOnDragEnd(result) {
 
@@ -30,7 +32,8 @@ function Todo() {
         let resultFetch = await fetch(API_URL + '/reorder' + `/${dragIdDatabase}` + `/${dropIdDatabase}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             },
         })
 
@@ -40,6 +43,8 @@ function Todo() {
                 dragIndex: result.source.index,
                 dropIndex: result.destination.index
             })
+            if (resultFetch.status === 401)
+                logout();
 
             console.log('reorder fail')
         }

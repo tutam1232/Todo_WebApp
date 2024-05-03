@@ -10,7 +10,7 @@ function TasksProvider({ children }) {
         switch (action.type) {
             case 'add_task': {
 
-                return [...tasks, { id: action.id, name: action.name }]
+                return [...tasks, { id: action.id, name: action.name, username: action.username}]
             }
             case 'delete_task': {
                 return tasks.filter(task => task.id != action.id)

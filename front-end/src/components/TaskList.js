@@ -3,6 +3,7 @@ import { useTasks, useTasksDispatch } from "../contexts/TasksContext.js";
 import styles from '../modules/style.module.css';
 import { Draggable } from "react-beautiful-dnd";
 import { useEffect } from "react";
+import useLogout from "../hooks/useLogout.js";
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -11,13 +12,15 @@ function TaskList() {
     console.log("[taskList]")
     const dispatch = useTasksDispatch();
     const tasks = useTasks();
+    const logout = useLogout();
     
 
     const fetchTodos = async function (API_URL) {
         let fetched_todo = await fetch(API_URL + '/gettodos',{
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
             }
         })    
 
@@ -32,6 +35,8 @@ function TaskList() {
             return;
         }
         else{
+            if(fetched_todo.status === 401)
+                logout();
             throw new Error("fetch tasks failed")
         }
 

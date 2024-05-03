@@ -4,19 +4,23 @@ import { useEffect } from "react";
 import styles from "../modules/style.module.css";
 import { useBlogs, useBlogsDispatch } from "../contexts/BlogsContext";
 import Blog from "../components/Blog";
+import useLogout from "../hooks/useLogout";
+
 const API_URL = process.env.REACT_APP_API_URL
 
 const Blogs = () => {
     console.log("[Blogs]")
     const blogs = useBlogs();
     const dispatch = useBlogsDispatch();
+    const logout = useLogout();
 
     const fetchBlogs = async function (API_URL) {
         //fetch with method get
         let fetched_blog = await fetch(API_URL + '/getblogs', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
             }
         })
 
@@ -30,6 +34,8 @@ const Blogs = () => {
             return;
         }
         else {
+            if (fetched_blog.status === 401)
+                logout();
             throw new Error("fetch blogs failed")
         }
 

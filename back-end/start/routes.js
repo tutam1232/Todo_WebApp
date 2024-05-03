@@ -16,11 +16,18 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/gettodos', 'TodoController.getTodos');
-Route.post('/addtodo', 'TodoController.addTodo');
-Route.put('/updatetodo/:id', 'TodoController.updateTodo');
-Route.delete('/deletetodo/:id', 'TodoController.deleteTodo');
-Route.put('/reorder/:id1/:id2', 'TodoController.reorderTodo');
+// public routes
+Route.post('/register', 'UserController.register');
+Route.post('/login', 'UserController.login');
 
-Route.get('/getblogs', 'BlogController.getBlogs');
-Route.get('/getblogs/:id', 'BlogController.getBlog');
+// protected routes
+Route.group(() => {
+    Route.get('/gettodos', 'TodoController.getTodos');
+    Route.post('/addtodo', 'TodoController.addTodo');
+    Route.put('/updatetodo/:id', 'TodoController.updateTodo');
+    Route.delete('/deletetodo/:id', 'TodoController.deleteTodo');
+    Route.put('/reorder/:id1/:id2', 'TodoController.reorderTodo');
+
+    Route.get('/getblogs', 'BlogController.getBlogs');
+    Route.get('/getblogs/:id', 'BlogController.getBlog');
+}).middleware(['verifyToken'])
