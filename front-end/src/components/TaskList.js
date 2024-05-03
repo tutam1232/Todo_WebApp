@@ -17,7 +17,8 @@ function TaskList() {
         let fetched_todo = await fetch(API_URL + '/gettodos',{
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
             }
         })    
 
