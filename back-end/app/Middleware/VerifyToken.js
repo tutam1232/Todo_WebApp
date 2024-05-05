@@ -21,12 +21,13 @@ class VerifyToken {
       if (!token) {
         return response.status(401).json({ message: 'token not provided' });
       }
-      const tokenVerify = jwt.verify(token, Env.get('APP_KEY'));
-      const user = await this.userModel.get(tokenVerify.id);
+      const tokenVerify = jwt.decode(token, Env.get('APP_KEY'));
+      const user = await this.userModel.get(tokenVerify.uid);
 
       await next();
 
     } catch (error) {
+      console.log(error)
       return response.status(401).json({ message: 'invalid token' });
 
     }

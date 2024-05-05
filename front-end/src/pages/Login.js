@@ -34,8 +34,8 @@ const Login = () => {
             if (response.ok) {
 
                 const data = await response.json();
-                //const accessToken = data.accessToken?.token;
-                const accessToken = data.accessToken;
+                const accessToken = data.accessToken?.token;
+                //const accessToken = data.accessToken;
                 const username = data.username;
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('username', username);

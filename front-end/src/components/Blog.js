@@ -17,9 +17,10 @@ const Blog = ({ id }) => {
       }
     })
 
-    let fetched_blogJSON = await fetched_blog.json();
+    
 
     if (fetched_blog.ok) {
+      let fetched_blogJSON = await fetched_blog.json();
       return fetched_blogJSON
     }
     else {

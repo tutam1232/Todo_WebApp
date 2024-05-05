@@ -30,4 +30,4 @@ Route.group(() => {
 
     Route.get('/getblogs', 'BlogController.getBlogs');
     Route.get('/getblogs/:id', 'BlogController.getBlog');
-}).middleware(['verifyToken'])
+}).middleware(['auth:jwt','verifyToken'])

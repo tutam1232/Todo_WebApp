@@ -38,6 +38,7 @@ function Todo() {
         })
 
         if (!resultFetch.ok) {
+            
             dispatch({
                 type: 'reorder_task',
                 dragIndex: result.source.index,
