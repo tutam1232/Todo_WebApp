@@ -23,10 +23,10 @@ function TaskList() {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
             }
         })    
-
-        let fetched_todoJSON = await fetched_todo.json();
+        
 
         if(fetched_todo.ok){
+            let fetched_todoJSON = await fetched_todo.json();
             dispatch({
                 type: 'set_tasks',
                 tasks: fetched_todoJSON
@@ -35,6 +35,7 @@ function TaskList() {
             return;
         }
         else{
+            console.log('logout')
             if(fetched_todo.status === 401)
                 logout();
             throw new Error("fetch tasks failed")

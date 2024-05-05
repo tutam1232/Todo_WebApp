@@ -8,7 +8,7 @@ class UserController {
     constructor(props) {
         this.userModel = new UserModel();
     }
-    async register({ request, response,auth }) {
+    async register({ request, response }) {
         try {
             const { username, password } = request.body;
             const hashpassword = await bcrypt.hash(password, Number(Env.get('SALT_ROUND')))
@@ -32,8 +32,8 @@ class UserController {
             if (!checkPassword) {
                 return response.status(401).json({ message: 'wrong password' })
             }
-            //const token = await auth.generate({id: username})
-            const token = jwt.sign({ id: username }, Env.get('APP_KEY'), { expiresIn: '10m' });
+            const token = await auth.generate({username: username})
+            //const token = jwt.sign({ username: username }, Env.get('APP_KEY'), { expiresIn: '10m' });
             return response.status(200).json({ accessToken: token, username: username})
 
         } catch (error) {
