@@ -36,9 +36,9 @@ const Login = () => {
                 const data = await response.json();
                 const accessToken = data.accessToken?.token;
                 //const accessToken = data.accessToken;
-                const username = data.username;
+                const user = data.user;
                 localStorage.setItem('accessToken', accessToken);
-                localStorage.setItem('username', username);
+                localStorage.setItem('id', user.id);
 
 
                 navigate(from, { replace: true });

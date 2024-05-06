@@ -38,7 +38,6 @@ const Register = () => {
         navigate('/login');
 
       } else {
-        console.log(response)
         alert('Register failed');
       }
     } catch (error) {

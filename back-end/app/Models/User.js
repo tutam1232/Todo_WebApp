@@ -38,10 +38,18 @@ class User extends Model {
   static get table(){
     return 'user';
   }
-
-  static get primaryKey () {
-    return 'username'
+  static get createdAtColumn () {
+    return null
   }
+  static get updatedAtColumn () {
+    return null
+  }
+  todos(){
+    return this.hasMany('App/Models/Todo','id','uid')
+  }
+
+  //primaryKey is default set to 'id'
+
 }
 
 module.exports = User

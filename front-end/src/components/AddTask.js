@@ -26,16 +26,17 @@ const AddTask = memo(function AddTask() {
                     },
                     body: JSON.stringify({
                         name: text,
-                        username: localStorage.getItem('username')
+                        uid: localStorage.getItem('id')
                     })
                 })
                 if (result.ok) {
                     let resultJSON = await result.json();
+                    console.log(resultJSON.id)
                     dispatch({
                         type: 'add_task',
                         id: resultJSON.id,
                         name: text,
-                        username: localStorage.getItem('username')
+                        username: resultJSON.username
                     });
                     setText('');
                 }

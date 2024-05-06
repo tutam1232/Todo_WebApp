@@ -1,29 +1,28 @@
 'use strict'
+const BlogService = use('App/Services/BlogService')
 
-const BlogModel = use('App/Models/BlogModel')
 
 class BlogController {
-
-    constructor(props){
-        this.blogModel = new BlogModel();
+    constructor() {
+        this.blogService = new BlogService()
     }
 
     async getBlogs({ request, response }) {
         try {
-            let blogs = await this.blogModel.getAll()
-            return response.status(200).json(blogs)
+            let data = await this.blogService.getBlogs(request)
+            return response.status(200).json(data)
+
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
     }
 
     async getBlog({ request, response }) {
         try {
-            let {id} = request.params
-            let blog = await this.blogModel.getById(id)
-            return response.status(200).json(blog)
+            let data = await this.blogService.getBlog(request)
+            return response.status(200).json(data)
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
     }
 }
