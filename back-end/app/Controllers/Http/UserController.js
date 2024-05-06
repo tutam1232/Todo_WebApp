@@ -1,44 +1,32 @@
 'use strict'
-const UserModel = use('App/Models/UserModel')
-const bcrypt = use('bcrypt');
-const Env = use('Env')
-const jwt = require('jsonwebtoken');
+const UserService = use('App/Services/UserService')
 
 class UserController {
-    constructor(props) {
-        this.userModel = new UserModel();
+
+    constructor() {
+        this.userService = new UserService()
     }
+
     async register({ request, response }) {
         try {
-            const { username, password } = request.body;
-            const hashpassword = await bcrypt.hash(password, Number(Env.get('SALT_ROUND')))
-            await this.userModel.add(username, hashpassword)
 
-            return response.status(200).json({ message: 'register complete' })
+           await this.userService.register(request)
+           return response.status(200).json()
 
         } catch (error) {
-            console.log(error)
-            if (error == 'username existed') {
-                return response.status(409).json({ message: 'username existed' })
-            }
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
     }
     async login({ request, response, auth  }) {
         try {
-            const { username, password } = request.body;
-            const user = await this.userModel.get(username)
-            const checkPassword = await bcrypt.compare(password, user.password)
-            if (!checkPassword) {
-                return response.status(401).json({ message: 'wrong password' })
-            }
-            const token = await auth.generate({username: username})
-            //const token = jwt.sign({ username: username }, Env.get('APP_KEY'), { expiresIn: '10m' });
-            return response.status(200).json({ accessToken: token, username: username})
+          
+            const data = await this.userService.login(request, auth)
+            return response.status(200).json(data)
 
-        } catch (error) {
-            console.log(error)
-            return response.status(500).json({ message: 'server error' })
+        } 
+        catch (error) {
+            return response.status(500).json({ message: error })
+
         }
     }
 }

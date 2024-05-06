@@ -2,14 +2,11 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
-const UserModel = use('App/Models/UserModel')
+const User = use('App/Models/User')
 const jwt = require('jsonwebtoken');
 const Env = use('Env')
 
 class VerifyToken {
-  constructor(props) {
-    this.userModel = new UserModel();
-  }
   /**
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -22,7 +19,7 @@ class VerifyToken {
         return response.status(401).json({ message: 'token not provided' });
       }
       const tokenVerify = jwt.decode(token, Env.get('APP_KEY'));
-      const user = await this.userModel.get(tokenVerify.uid);
+      const user = await User.findOrFail(tokenVerify.uid);
 
       await next();
 

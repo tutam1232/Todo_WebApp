@@ -1,61 +1,71 @@
 'use strict'
-const TodoModel = use('App/Models/TodoModel')
-
+const TodoService = use('App/Services/TodoService')
 
 class TodoController {
-    constructor(props){
-        this.todoModel = new TodoModel();
+    constructor() {
+        this.todoService = new TodoService()
     }
     async getTodos({ request, response }) {
         try {
-            let todos = await this.todoModel .getAll()
-            return response.status(200).json(todos)
+
+            let data = await this.todoService.getTodos(request)
+            return response.status(200).json(data)
+
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
+
         }
     }
 
     async addTodo({ request, response }) {
         try {
-            let {name, username} = request.body;
-            let id = await this.todoModel.add(name, username)
-            return response.status(200).json({ id:id, message: 'complete' });
+
+            let data = await this.todoService.addTodo(request)
+            return response.status(200).json(data)
+
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
+
     }
 
     async updateTodo({ request, response }) {
+
         try {
-            let {name} = request.body;
-            let id = request.params.id;
-            await this.todoModel.update(id, name)
-            return response.status(200).json({ message: 'complete' });
+            await this.todoService.updateTodo(request)
+            return response.status(200).json()
         } catch (error) {
-            console.log(error)
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
+
     }
 
     async deleteTodo({ request, response }) {
+
         try {
-            let id = request.params.id;
-            await this.todoModel.delete(id)
-            return response.status(200).json({message: 'complete'});
+
+            await this.todoService.deleteTodo(request)
+            return response.status(200).json()
+
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+                
+                return response.status(500).json({ message: error })
+
         }
+
     }
 
     async reorderTodo({ request, response }) {
+
         try {
-            let id1 = request.params.id1;
-            let id2 = request.params.id2;
-            await this.todoModel.reorder(id1, id2)
-            return response.status(200).json({message: 'complete'});
+
+            await this.todoService.reorderTodo(request)
+            return response.status(200).json()
+
         } catch (error) {
-            return response.status(500).json({ message: 'server error' })
+            return response.status(500).json({ message: error })
         }
+
     }
 }
 
