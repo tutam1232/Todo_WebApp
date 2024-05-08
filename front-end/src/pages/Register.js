@@ -47,7 +47,7 @@ const Register = () => {
 
 
   return (
-    !accessToken ? 
+    !accessToken ?
       <>
         <h1 style={{ textAlign: 'center', color: 'white' }}>Register</h1>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -71,7 +71,7 @@ const Register = () => {
           <Link to="/login" className={styles.link}>Login</Link>
         </div>
       </>
-     : <Navigate to="/" replace={true} />
+      : <Navigate to="/" replace={true} />
   );
 };
 

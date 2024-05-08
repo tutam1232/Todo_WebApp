@@ -6,7 +6,7 @@ const TasksDispatcherContext = createContext(null);
 
 function TasksProvider({ children }) {
     const tasksReducer = useCallback((tasks, action) => {
-        console.log("[reducer]")
+        console.log("[tasks reducer]")
         switch (action.type) {
             case 'add_task': {
 

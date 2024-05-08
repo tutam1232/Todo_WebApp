@@ -39,6 +39,7 @@ const Login = () => {
                 const user = data.user;
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('id', user.id);
+                localStorage.setItem('role', user.role);
 
 
                 navigate(from, { replace: true });

@@ -1,78 +1,66 @@
 import TaskList from "../components/TaskList.js"
 import AddTask from "../components/AddTask.js"
-import { useTasksDispatch, useTasks } from "../contexts/TasksContext.js";
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useTasksDispatch } from "../contexts/TasksContext.js";
+import { useEffect } from "react";
 import useLogout from "../hooks/useLogout.js";
+
 const API_URL = process.env.REACT_APP_API_URL
+
 
 function Todo() {
 
     console.log("[Todo]")
-
-    let dispatch = useTasksDispatch();
-    let tasks = useTasks()
+    const dispatch = useTasksDispatch();
     const logout = useLogout();
 
-    async function handleOnDragEnd(result) {
-
-        if (!result.destination) return;
-
-        const draggedTask = tasks[result.source.index]
-        const previousDropTask = tasks[result.destination.index]
-        const dragIdDatabase = draggedTask.id;
-        const dropIdDatabase = previousDropTask.id;
-
-
-        dispatch({
-            type: 'reorder_task',
-            dragIndex: result.source.index,
-            dropIndex: result.destination.index
-        })
-
-        let resultFetch = await fetch(API_URL + '/reorder' + `/${dragIdDatabase}` + `/${dropIdDatabase}`, {
-            method: 'PUT',
+    const fetchTodos = async function (API_URL) {
+        let fetched_todo = await fetch(API_URL + '/gettodos', {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            },
+            }
         })
 
-        if (!resultFetch.ok) {
-            
-            dispatch({
-                type: 'reorder_task',
-                dragIndex: result.source.index,
-                dropIndex: result.destination.index
-            })
-            if (resultFetch.status === 401)
-                logout();
 
-            console.log('reorder fail')
+        if (fetched_todo.ok) {
+            let fetched_todoJSON = await fetched_todo.json();
+            dispatch({
+                type: 'set_tasks',
+                tasks: fetched_todoJSON
+            })
+
+            return;
+        }
+        else {
+
+            if (fetched_todo.status === 401)
+                logout();
+            throw new Error("fetch tasks failed")
         }
 
-
     }
+
+    useEffect(() => {
+
+        fetchTodos(API_URL).then(() => {
+            console.log("fetched tasks")
+        }).catch(err => {
+            console.log(err)
+        })
+
+
+    }, [])
+
 
     return (
         <>
             <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>TODO LIST</h1>
 
             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><AddTask /></div>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                    <Droppable droppableId="tasks">
-                        {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps} >
-                                <TaskList />
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </div>
-
-            </DragDropContext>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <TaskList />
+            </div>
         </>
     );
 

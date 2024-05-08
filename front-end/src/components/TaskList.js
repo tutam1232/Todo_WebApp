@@ -1,11 +1,12 @@
 import Task from "./Task.js"
-import { useTasks, useTasksDispatch } from "../contexts/TasksContext.js";
 import styles from '../modules/style.module.css';
-import { Draggable } from "react-beautiful-dnd";
-import { useEffect } from "react";
+import { Draggable, DragDropContext, Droppable } from "react-beautiful-dnd";
+import { useTasks, useTasksDispatch } from "../contexts/TasksContext.js";
 import useLogout from "../hooks/useLogout.js";
 
 const API_URL = process.env.REACT_APP_API_URL
+
+
 
 function TaskList() {
 
@@ -13,59 +14,78 @@ function TaskList() {
     const dispatch = useTasksDispatch();
     const tasks = useTasks();
     const logout = useLogout();
-    
 
-    const fetchTodos = async function (API_URL) {
-        let fetched_todo = await fetch(API_URL + '/gettodos',{
-            method: 'GET',
+
+    async function handleOnDragEnd(result) {
+
+        if (!result.destination) return;
+
+        const draggedTask = tasks[result.source.index]
+        const previousDropTask = tasks[result.destination.index]
+        const dragIdDatabase = draggedTask.id;
+        const dropIdDatabase = previousDropTask.id;
+
+
+        dispatch({
+            type: 'reorder_task',
+            dragIndex: result.source.index,
+            dropIndex: result.destination.index
+        })
+
+        let resultFetch = await fetch(API_URL + `/reorder/${dragIdDatabase}/${dropIdDatabase}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
-            }
-        })    
-        
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+            },
+        })
 
-        if(fetched_todo.ok){
-            let fetched_todoJSON = await fetched_todo.json();
+        if (!resultFetch.ok) {
+
             dispatch({
-                type: 'set_tasks',
-                tasks: fetched_todoJSON
+                type: 'reorder_task',
+                dragIndex: result.source.index,
+                dropIndex: result.destination.index
             })
-
-            return;
-        }
-        else{
-            console.log('logout')
-            if(fetched_todo.status === 401)
+            if (resultFetch.status === 401)
                 logout();
-            throw new Error("fetch tasks failed")
+
+            console.log('reorder fail')
         }
+
 
     }
 
-    useEffect(() => {
 
-        fetchTodos(API_URL).then(() => {
-            console.log("fetched tasks")
-        }).catch(err => {
-            console.log(err)
-        })
-        
-
-    },[])
 
     return (
-        <div className={styles.tasklist} style={{width:"30vw"}}>
-            {tasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={(task.id).toString()} index={index}>
-                    {(provided) => (
-                        <div  ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-                            <Task task={task} key={task.id} />
+
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+
+            <Droppable droppableId="tasks">
+                {(provided) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps} >
+                        <div className={styles.tasklist} style={{ width: "30vw" }}>
+                            {tasks.map((task, index) => (
+                                <Draggable key={task.id} draggableId={(task.id).toString()} index={index}>
+                                    {(provided) => (
+                                        <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+                                            <Task task={task} key={task.id} />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
                         </div>
-                    )}
-                </Draggable>
-            ))}
-        </div>
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
+
+
+        </DragDropContext>
+
     )
 
 }

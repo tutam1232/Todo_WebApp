@@ -8,7 +8,7 @@ class BlogService {
             
             return blogs
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 
@@ -20,7 +20,7 @@ class BlogService {
 
             return blog
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 }

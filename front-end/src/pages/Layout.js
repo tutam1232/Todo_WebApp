@@ -12,6 +12,7 @@ const Layout = () => {
                 <Link className={styles.link} to="/">Home</Link>
                 <Link className={styles.link} to="/blog">Blog</Link>
                 <Link className={styles.link} to="/contact">Contact</Link>
+                <Link className={styles.link} to="/user">User</Link>
                 <button onClick={logout}>Logout</button>
             </nav>
 

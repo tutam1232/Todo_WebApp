@@ -6,6 +6,7 @@ function useLogout() {
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('id');
+    localStorage.removeItem('role');
 
     alert('Logged out due to expired token');
 
