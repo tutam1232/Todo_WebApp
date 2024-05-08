@@ -2,10 +2,10 @@ import User from "./User";
 import useLogout from "../hooks/useLogout.js";
 import { useUsers, useUsersDispatch } from "../contexts/UsersContext.js";
 import styles from '../modules/style.module.css';
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 import { useEffect } from "react";
-
-const API_URL = process.env.REACT_APP_API_URL
 
 function UserList() {
 
@@ -14,38 +14,27 @@ function UserList() {
     const dispatch = useUsersDispatch();
     const logout = useLogout();
 
-    const fetchUsers = async function (API_URL) {
-        let fetched_user = await fetch(API_URL + '/getusers', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            }
-        })
-
-        if (fetched_user.ok) {
-            let fetched_userJSON = await fetched_user.json();
-            dispatch({
-                type: 'set_users',
-                users: fetched_userJSON
-            })
-            return;
-        }
-        else {
-            if (fetched_user.status === 401)
-                logout();
-            throw new Error("fetch users failed")
-        }
-    }
-
     useEffect(() => {
+        const getData = async () => {
+            let result = await fetchService('/getusers', 'GET', null);
 
-        fetchUsers(API_URL).then(() => {
-            console.log("fetched users")
-        }).catch(err => {
-            console.log(err)
-        })
+            if (result.ok) {
+                let resultJSON = await result.json();
+                dispatch({
+                    type: 'set_users',
+                    users: resultJSON
+                });
+            }
+            else if(result.status === 401){
+                logout();
+            }
+            else{
+                showErrorService(result);
+            }
+        }
 
+        getData();
+        
     }, [])
 
     return (

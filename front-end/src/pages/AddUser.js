@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import styles from '../modules/style.module.css'
 import useLogout from "../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 function AddUser() {
 
@@ -15,25 +15,24 @@ function AddUser() {
     const logout = useLogout();
     const navigate = useNavigate();
 
-    const fetchRole = async function (API_URL) {
-        let fetched_role = await fetch(API_URL + '/getroles', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    useEffect(() => {
+        const getData = async () => {
+            let result = await fetchService('/getroles', 'GET', null);
+            if (result.ok) {
+                let resultJSON = await result.json();
+                setRoles(resultJSON);
             }
-        })
-
-        if (fetched_role.ok) {
-            let fetched_roleJSON = await fetched_role.json();
-            setRoles(fetched_roleJSON);
-        }
-        else {
-            if (fetched_role.status === 401)
+            else if (result.status === 401) {
                 logout();
-            throw new Error("fetch role failed")
+            }
+            else {
+                showErrorService(result);
+            }
         }
-    }
+
+        getData();
+
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,42 +42,27 @@ function AddUser() {
             return
         }
 
-        const response = await fetch(API_URL + '/adduser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            },
-            body: JSON.stringify({
-                username,
-                password,
-                role
-            }),
+        let result = await fetchService('/adduser', 'POST', {
+            username,
+            password,
+            role
         });
 
-        if (response.ok) {
+        if (result.ok) {
             alert('Register successful');
-
             navigate('/user');
 
-        } else {
-            if (response.status === 401)
-                logout();
-            else
-                alert('Register failed');
+        }
+        else if (result.status === 401) {
+            logout();
+        }
+        else {
+            showErrorService(result);
         }
     }
 
 
-    useEffect(() => {
 
-        fetchRole(API_URL).then(() => {
-            console.log("fetched roles")
-        }).catch(err => {
-            console.log(err)
-        })
-
-    }, [])
 
 
     return (

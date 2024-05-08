@@ -134,12 +134,15 @@ class UserService {
             }
             user.username = username;
             user.role = role;
-            user.password = password;
+             if(password){
+                user.password = password;
+             }
 
             await user.save();
             return
         }
         catch(error){
+            console.log(error)
             if(error.constraint == 'UNI_USER'){
                 throw ('username existed, pls choose another username ')
             }

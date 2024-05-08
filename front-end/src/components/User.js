@@ -2,8 +2,8 @@ import { memo } from "react";
 import useLogout from "../hooks/useLogout";
 import { Link } from "react-router-dom";
 import { useTasksDispatch } from "../contexts/TasksContext";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 const User = memo(function User({ user }) {
     console.log("[User]")
@@ -13,9 +13,9 @@ const User = memo(function User({ user }) {
     const dispatch = useTasksDispatch();
 
     return (
-        <div style={{padding:'10px'}}>
+        <div style={{ padding: '10px' }}>
 
-            <div style={{ textAlign: 'center', color:'white' }}>
+            <div style={{ textAlign: 'center', color: 'white' }}>
                 <span>username: {user.username}</span>
                 <br />
                 <span>role: {user.role}</span>
@@ -32,27 +32,22 @@ const User = memo(function User({ user }) {
                 }
 
                 <button onClick={async () => {
-                    let result = await fetch(API_URL + '/gettodos/' + user.id, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                        }
-                    })
 
-                    if (result.ok){
+                    let result = await fetchService(`/gettodos/${user.id}`, 'GET', null);
+
+                    if (result.ok) {
                         let fetched_resultJSON = await result.json();
+                
                         dispatch({
                             type: 'set_tasks',
                             tasks: fetched_resultJSON
-                        })                        
+                        })
                     }
-                    else{
-                        if(result.status === 401)
-                            logout();
-                        else{
-                            console.log('fetch tasks failed')
-                        }
+                    else if (result.status === 401) {
+                        logout();
+                    }
+                    else {
+                        showErrorService(result);
                     }
                 }}>
                     view tasks

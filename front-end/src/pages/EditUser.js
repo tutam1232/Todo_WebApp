@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useLogout from "../hooks/useLogout";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from '../modules/style.module.css'
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 function EditUser() {
     console.log("[EditUser]");
@@ -17,61 +17,40 @@ function EditUser() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
 
-    const fetchUser = async function (API_URL) {
-        let fetched_user = await fetch(API_URL + '/getuser/' + id.toString(), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            }
-        })
-
-        if (fetched_user.ok) {
-            let fetched_userJSON = await fetched_user.json();
-            return fetched_userJSON;
-        }
-        else {
-            if (fetched_user.status === 401)
-                logout();
-            throw new Error("fetch user failed")
-        }
-    }
-
-    const fetchRole = async function (API_URL) {
-        let fetched_role = await fetch(API_URL + '/getroles', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            }
-        })
-
-        if (fetched_role.ok) {
-            let fetched_roleJSON = await fetched_role.json();
-            return fetched_roleJSON;
-        }
-        else {
-            if (fetched_role.status === 401)
-                logout();
-            throw new Error("fetch role failed")
-        }
-    }
-
     useEffect(() => {
-        fetchUser(API_URL).then((fetchedUser) => {
-            console.log("fetched user")
-            setUsername(fetchedUser.username);
-            setRole(fetchedUser.role);
-        }).catch(err => {
-            console.log(err)
-        })
 
-        fetchRole(API_URL).then((fetchedRole) => {
-            console.log("fetched roles")
-            setRoles(fetchedRole);
-        }).catch(err => {
-            console.log(err)
-        })
+        const getData = async () => {
+            let resultUser = await fetchService(`/getuser/${id}`, 'GET', null);
+            if (resultUser.ok) {
+                let resultUserJSON = await resultUser.json();
+                setUsername(resultUserJSON.username);
+                setRole(resultUserJSON.role);
+            }
+            else if(resultUser.status === 401){
+                logout();
+            }
+            else{
+                showErrorService(resultUser);
+            }
+        }
+
+        const getRole = async () => {
+            let resultRole = await fetchService('/getroles', 'GET', null);
+            if (resultRole.ok) {
+                let resultRoleJSON = await resultRole.json();
+                setRoles(resultRoleJSON);
+            }
+            else if(resultRole.status === 401){
+                logout();
+            }
+            else{
+                showErrorService(resultRole);
+            }
+        }
+
+        getData();
+        getRole();
+    
 
     }, [])
 
@@ -80,18 +59,11 @@ function EditUser() {
 
         //TODO: handle when password is empty + password is not empty
 
-        let result = await fetch(API_URL + '/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            },
-            body: JSON.stringify({
-                username: username,
-                password:password,
-                role: role
-            })
-        })
+        let result = await fetchService('/updateuser/' + id, 'PUT', {
+            username: username,
+            password: password,
+            role: role
+        });   
 
         if (result.ok) {
             alert('update success')
@@ -100,8 +72,7 @@ function EditUser() {
             if (result.status === 401)
                 logout();
             else {
-                let resultJSON = await result.json();
-                alert(resultJSON.message);
+                showErrorService(result);
             }
 
         }
@@ -109,26 +80,19 @@ function EditUser() {
 
 
     const handleDelete = async () => {
-        let result = await fetch(API_URL + '/deleteuser/' + id, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            }
-        })
 
+        let result = await fetchService('/deleteuser/' + id, 'DELETE', null);
+
+        
         if (result.ok) {
             alert('delete success')
-
             navigate('/user');
         }
-        else {
-            if (result.status === 401)
-                logout();
-            else {
-                let resultJSON = await result.json();
-                alert(resultJSON.message);
-            }
+        else if(result.status === 401){
+            logout();
+        }
+        else{
+            showErrorService(result);
         }
     }
 

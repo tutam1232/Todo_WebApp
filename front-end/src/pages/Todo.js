@@ -4,50 +4,35 @@ import { useTasksDispatch } from "../contexts/TasksContext.js";
 import { useEffect } from "react";
 import useLogout from "../hooks/useLogout.js";
 
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService.js";
+import showErrorService from "../services/showErrorService.js";
+
 
 
 function Todo() {
 
     console.log("[Todo]")
     const dispatch = useTasksDispatch();
-    const logout = useLogout();
-
-    const fetchTodos = async function (API_URL) {
-        let fetched_todo = await fetch(API_URL + '/gettodos', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            }
-        })
-
-
-        if (fetched_todo.ok) {
-            let fetched_todoJSON = await fetched_todo.json();
-            dispatch({
-                type: 'set_tasks',
-                tasks: fetched_todoJSON
-            })
-
-            return;
-        }
-        else {
-
-            if (fetched_todo.status === 401)
-                logout();
-            throw new Error("fetch tasks failed")
-        }
-
-    }
+    const logout = useLogout();    
 
     useEffect(() => {
 
-        fetchTodos(API_URL).then(() => {
-            console.log("fetched tasks")
-        }).catch(err => {
-            console.log(err)
-        })
+        const getData = async () => {
+            const res = await fetchService('/gettodos', 'GET', null)
+            if (res.ok) {
+                const data = await res.json()
+                dispatch({
+                    type: 'set_tasks',
+                    tasks: data
+                })
+            }
+            else if (res.status === 401)
+                logout();
+            else
+                showErrorService(res)
+        }
+
+        getData()
 
 
     }, [])

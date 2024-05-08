@@ -3,9 +3,8 @@ import styles from '../modules/style.module.css';
 import { Draggable, DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useTasks, useTasksDispatch } from "../contexts/TasksContext.js";
 import useLogout from "../hooks/useLogout.js";
-
-const API_URL = process.env.REACT_APP_API_URL
-
+import fetchService from "../services/fetchService.js";
+import showErrorService from "../services/showErrorService.js";
 
 
 function TaskList() {
@@ -32,14 +31,7 @@ function TaskList() {
             dropIndex: result.destination.index
         })
 
-        let resultFetch = await fetch(API_URL + `/reorder/${dragIdDatabase}/${dropIdDatabase}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            },
-        })
-
+        let resultFetch = await fetchService(`/reorder/${dragIdDatabase}/${dropIdDatabase}`, 'PUT', null);
         if (!resultFetch.ok) {
 
             dispatch({
@@ -49,8 +41,9 @@ function TaskList() {
             })
             if (resultFetch.status === 401)
                 logout();
-
-            console.log('reorder fail')
+            else{
+                showErrorService(resultFetch);
+            }
         }
 
 

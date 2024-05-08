@@ -5,8 +5,8 @@ import styles from "../modules/style.module.css";
 import { useBlogs, useBlogsDispatch } from "../contexts/BlogsContext";
 import Blog from "../components/Blog";
 import useLogout from "../hooks/useLogout";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 const Blogs = () => {
     console.log("[Blogs]")
@@ -14,41 +14,26 @@ const Blogs = () => {
     const dispatch = useBlogsDispatch();
     const logout = useLogout();
 
-    const fetchBlogs = async function (API_URL) {
-        //fetch with method get
-        let fetched_blog = await fetch(API_URL + '/getblogs', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
-            }
-        })
-
-        
-
-        if (fetched_blog.ok) {
-            let fetched_blogJSON = await fetched_blog.json();
-            dispatch({
-                type: 'set_blogs',
-                blogs: fetched_blogJSON
-            })
-            return;
-        }
-        else {
-            if (fetched_blog.status === 401)
-                logout();
-            throw new Error("fetch blogs failed")
-        }
-
-    }
 
     useEffect(() => {
-        fetchBlogs(API_URL).then(() => {
-            console.log("fetched blogs")
-        }).catch(err => {
-            console.log(err)
-        })
+        const getData = async () => {
+            let result = await fetchService('/getblogs', 'GET', null);
+            if (result.ok) {
+                let resultJSON = await result.json();
+                dispatch({
+                    type: 'set_blogs',
+                    blogs: resultJSON
+                })
+            }
+            else if (result.status === 401) {
+                logout();
+            }
+            else {
+                showErrorService(result);
+            }
+        }
 
+        getData();
     }, [])
 
     return (

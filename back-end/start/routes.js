@@ -42,6 +42,5 @@ Route.group(() => {
     Route.put('/updateuser/:id', 'UserController.updateUser').middleware(['verifyAdmin']);
     Route.delete('/deleteuser/:id', 'UserController.deleteUser').middleware(['verifyAdmin']);
 
-    //TODO: move hash password to model using Lucid hooks
 
 }).middleware(['auth:jwt', 'verifyToken'])

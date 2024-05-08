@@ -5,7 +5,7 @@ class TodoService {
 
     async getTodos(request) {
         try {
-            let todos = await Todo.all();
+            let todos = await Todo.query().orderBy('index', 'asc').fetch();
             todos = todos.toJSON();
 
             for (let i = 0; i < todos.length; i++) {
