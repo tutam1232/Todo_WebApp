@@ -31,7 +31,7 @@ class TodoService {
             let todos = await user.todos().fetch();
             todos = todos.toJSON();
 
-            
+
             for (let i = 0; i < todos.length; i++) {
                 let user = await User.find(todos[i].uid);
                 user = user.toJSON();
@@ -43,7 +43,7 @@ class TodoService {
             console.log(error)
             if (error == 'user not existed') {
                 throw ('user not existed')
-                
+
             }
             throw ('server error')
         }
@@ -56,6 +56,10 @@ class TodoService {
             let user = await User.findOrFail(uid);
             user = user.toJSON();
 
+            let maxTodoByIndex = await Todo.query().orderBy('index', 'desc').first();
+            if (maxTodoByIndex) {
+                todo.index = maxTodoByIndex.index + 1024;
+            }//TODO: move to beforeCreate hook
 
             todo.name = name;
             todo.uid = uid;
@@ -110,17 +114,36 @@ class TodoService {
             let todo1 = await Todo.findOrFail(id1);
             let todo2 = await Todo.findOrFail(id2);
 
-            let index1 = todo1.index;
-            let index2 = todo2.index;
+            let nextIndex = null;
+            let preIndex = null;
 
-            todo1.index = index2;
-            todo2.index = index1;
+            if (todo1.index < todo2.index) { //drag top to bottom
+                preIndex = todo2.index;
 
+                let tempTodo = await Todo.query().where('index', '>', todo2.index).orderBy('index', 'asc').first();
+                if (tempTodo)
+                    nextIndex = tempTodo.index;
+                else
+                    nextIndex = todo2.index + (1024 / 2);
+            }
+            else if (todo1.index > todo2.index) { //drag bottom to top
+                nextIndex = todo2.index;
+
+                let tempTodo = await Todo.query().where('index', '<', todo2.index).orderBy('index', 'desc').first();
+                if (tempTodo)
+                    preIndex = tempTodo.index;
+                else
+                    preIndex = todo2.index - (1024 / 2);
+            }
+
+            let index = Math.round((nextIndex + preIndex) / 2)
+
+            todo1.index = index
             await todo1.save();
-            await todo2.save();
 
             return
         } catch (error) {
+            console.log(error)
             throw ('server error')
         }
     }
