@@ -111,7 +111,7 @@ class UserService {
             }
 
             user = user.toJSON();
-            const { password, ...rest } = user;            
+            const { password, ...rest } = user;
 
             return rest
 
@@ -123,54 +123,53 @@ class UserService {
         }
     }
 
-    async updateUser(request){
-        try{
+    async updateUser(request) {
+        try {
             const { id } = request.params;
             const { username, role, password } = request.body;
 
             let user = await User.find(id);
-            if(!user){
+            if (!user) {
                 throw ('user not existed')
             }
-            user.username = username;
-            user.role = role;
-             if(password){
-                user.password = password;
-             }
+
+            username ? user.username = username : null;
+            role ? user.role = role : null;
+            password ? user.password = password : null;
 
             await user.save();
             return
         }
-        catch(error){
+        catch (error) {
             console.log(error)
-            if(error.constraint == 'UNI_USER'){
+            if (error.constraint == 'UNI_USER') {
                 throw ('username existed, pls choose another username ')
             }
-                
-            if(error == 'user not existed'){
+
+            if (error == 'user not existed') {
                 throw ('user not existed')
             }
-            else 
+            else
                 throw ('server error')
         }
     }
 
-    async deleteUser(request){
+    async deleteUser(request) {
         try {
             const { id } = request.params;
             let user = await User.find(id);
-            if(!user){
+            if (!user) {
                 throw ('user not existed')
             }
             await user.delete();
 
             return
         } catch (error) {
-            if(error == 'user not existed'){
+            if (error == 'user not existed') {
                 throw ('user not existed')
             }
             throw ('server error')
-            
+
         }
     }
 
