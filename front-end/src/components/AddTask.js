@@ -4,8 +4,8 @@ import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useLogout from "../hooks/useLogout";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 const AddTask = memo(function AddTask() {
     console.log("[addTask]")
@@ -18,20 +18,12 @@ const AddTask = memo(function AddTask() {
         <div>
             <input type="text" onChange={(e) => setText(e.target.value)} value={text} className={styles.input} />
             <button className={styles.addtask} onClick={async () => {
-                let result = await fetch(API_URL + '/addtodo', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                    },
-                    body: JSON.stringify({
-                        name: text,
-                        uid: localStorage.getItem('id')
-                    })
+                let result = await fetchService('/addtodo', 'POST', {
+                    name: text,
+                    uid: localStorage.getItem('id')
                 })
                 if (result.ok) {
                     let resultJSON = await result.json();
-                    console.log(resultJSON.id)
                     dispatch({
                         type: 'add_task',
                         id: resultJSON.id,
@@ -40,11 +32,11 @@ const AddTask = memo(function AddTask() {
                     });
                     setText('');
                 }
+                else if(result.status === 401){
+                    logout();
+                }
                 else{
-                    console.log('add task failed')
-                    if (result.status === 401) 
-                        logout();
-                    
+                    showErrorService(result);
                 }
             }}><FontAwesomeIcon icon={faPlus} /></button>
         </div>

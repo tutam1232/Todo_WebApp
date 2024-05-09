@@ -22,6 +22,7 @@ Route.post('/login', 'UserController.login');
 
 // protected routes
 Route.group(() => {
+    Route.get('/gettodos/:id', 'TodoController.getTodosByUser')  
     Route.get('/gettodos', 'TodoController.getTodos');
     Route.post('/addtodo', 'TodoController.addTodo');
     Route.put('/updatetodo/:id', 'TodoController.updateTodo');
@@ -30,4 +31,16 @@ Route.group(() => {
 
     Route.get('/getblogs', 'BlogController.getBlogs');
     Route.get('/getblogs/:id', 'BlogController.getBlog');
-}).middleware(['auth:jwt','verifyToken'])
+
+
+    Route.get('/getusers', 'UserController.getUsers'); 
+    Route.get('/getuser/:id', 'UserController.getUser'); 
+
+    Route.get('/getroles', 'RoleController.getRoles'); 
+
+    Route.post('/adduser', 'UserController.addUser').middleware(['verifyAdmin']); 
+    Route.put('/updateuser/:id', 'UserController.updateUser').middleware(['verifyAdmin']);
+    Route.delete('/deleteuser/:id', 'UserController.deleteUser').middleware(['verifyAdmin']);
+
+
+}).middleware(['auth:jwt', 'verifyToken'])

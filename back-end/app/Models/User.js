@@ -1,7 +1,7 @@
 'use strict'
 
 /** @type {import('@adonisjs/framework/src/Hash')} */
-const Hash = use('Hash')
+
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
@@ -19,6 +19,8 @@ class User extends Model {
     //     userInstance.password = await Hash.make(userInstance.password)
     //   }
     // })
+
+    this.addHook('beforeSave', 'UserHook.hashPassword')
   }
 
   /**
@@ -47,6 +49,11 @@ class User extends Model {
   todos(){
     return this.hasMany('App/Models/Todo','id','uid')
   }
+  role(){
+    return this.belongsTo('App/Models/Role','role','id')
+  }
+
+  
 
   //primaryKey is default set to 'id'
 

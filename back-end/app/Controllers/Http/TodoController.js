@@ -17,6 +17,17 @@ class TodoController {
         }
     }
 
+    async getTodosByUser({ request, response }) {
+        try {
+
+            let data = await this.todoService.getTodosByUser(request)
+            return response.status(200).json(data)
+
+        } catch (error) {
+            return response.status(500).json({ message: error })
+        }
+    }
+
     async addTodo({ request, response }) {
         try {
 

@@ -3,9 +3,9 @@ const User = use('App/Models/User')
 
 class TodoService {
 
-    async getTodos(request){
+    async getTodos(request) {
         try {
-            let todos = await Todo.all();
+            let todos = await Todo.query().orderBy('index', 'asc').fetch();
             todos = todos.toJSON();
 
             for (let i = 0; i < todos.length; i++) {
@@ -16,17 +16,50 @@ class TodoService {
 
             return todos
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 
-    async addTodo(request){
+    async getTodosByUser(request) {
         try {
-            let {name, uid} = request.body;
+            const { id } = request.params;
+            let user = await User.find(id);
+
+            if (!user) {
+                throw ('user not existed')
+            }
+            let todos = await user.todos().fetch();
+            todos = todos.toJSON();
+
+
+            for (let i = 0; i < todos.length; i++) {
+                let user = await User.find(todos[i].uid);
+                user = user.toJSON();
+                todos[i].username = user.username;
+            }
+
+            return todos
+        } catch (error) {
+            console.log(error)
+            if (error == 'user not existed') {
+                throw ('user not existed')
+
+            }
+            throw ('server error')
+        }
+    }
+
+    async addTodo(request) {
+        try {
+            let { name, uid } = request.body;
             let todo = new Todo();
             let user = await User.findOrFail(uid);
             user = user.toJSON();
 
+            let maxTodoByIndex = await Todo.query().orderBy('index', 'desc').first();
+            if (maxTodoByIndex) {
+                todo.index = maxTodoByIndex.index + 1024;
+            }//TODO: move to beforeCreate hook
 
             todo.name = name;
             todo.uid = uid;
@@ -37,43 +70,43 @@ class TodoService {
                 id: id,
                 username: user.username
             }
-            
+
             return data
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 
-    async updateTodo(request){
+    async updateTodo(request) {
         try {
-            let {name} = request.body;
+            let { name } = request.body;
             let id = request.params.id;
-            
+
             let todo = await Todo.findOrFail(id);
             todo.name = name;
             await todo.save();
 
-            return 
+            return
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 
-    async deleteTodo(request){
+    async deleteTodo(request) {
         try {
             let id = request.params.id;
-        
+
             let todo = await Todo.findOrFail(id);
             await todo.delete();
 
-            return 
+            return
         } catch (error) {
-            throw new Error('server error')
+            throw ('server error')
         }
     }
 
 
-    async reorderTodo(request){
+    async reorderTodo(request) {
         try {
             let id1 = request.params.id1;
             let id2 = request.params.id2;
@@ -81,18 +114,37 @@ class TodoService {
             let todo1 = await Todo.findOrFail(id1);
             let todo2 = await Todo.findOrFail(id2);
 
-            let index1 = todo1.index;
-            let index2 = todo2.index;
+            let nextIndex = null;
+            let preIndex = null;
 
-            todo1.index = index2;
-            todo2.index = index1;
+            if (todo1.index < todo2.index) { //drag top to bottom
+                preIndex = todo2.index;
 
+                let tempTodo = await Todo.query().where('index', '>', todo2.index).orderBy('index', 'asc').first();
+                if (tempTodo)
+                    nextIndex = tempTodo.index;
+                else
+                    nextIndex = todo2.index + (1024 / 2);
+            }
+            else if (todo1.index > todo2.index) { //drag bottom to top
+                nextIndex = todo2.index;
+
+                let tempTodo = await Todo.query().where('index', '<', todo2.index).orderBy('index', 'desc').first();
+                if (tempTodo)
+                    preIndex = tempTodo.index;
+                else
+                    preIndex = todo2.index - (1024 / 2);
+            }
+
+            let index = Math.round((nextIndex + preIndex) / 2)
+
+            todo1.index = index
             await todo1.save();
-            await todo2.save();
 
-            return 
+            return
         } catch (error) {
-            throw new Error('server error')
+            console.log(error)
+            throw ('server error')
         }
     }
 }

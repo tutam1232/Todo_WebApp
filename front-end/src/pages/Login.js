@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import styles from "../modules/style.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 const Login = () => {
 
@@ -20,16 +20,8 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(API_URL + '/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    password
-                }),
-            });
+
+            let response = await fetchService('/login', 'POST', { username, password });
 
             if (response.ok) {
 
@@ -37,13 +29,16 @@ const Login = () => {
                 const accessToken = data.accessToken?.token;
                 //const accessToken = data.accessToken;
                 const user = data.user;
+
+                
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('id', user.id);
+                localStorage.setItem('role', user.role);
 
 
                 navigate(from, { replace: true });
             } else {
-                alert('Login failed');
+                showErrorService(response);
             }
         } catch (error) {
             console.error(error);
@@ -51,7 +46,7 @@ const Login = () => {
     };
 
     return (
-        !accessToken ? 
+        !accessToken ?
             <>
                 <h1 style={{ textAlign: 'center', color: 'white' }}>Login</h1>
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -65,7 +60,7 @@ const Login = () => {
                     <Link to="/register" className={styles.link}>Register</Link>
                 </div>
             </>
-         : <Navigate to="/" replace={true} />
+            : <Navigate to="/" replace={true} />
     )
 }
 

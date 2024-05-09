@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { TasksProvider } from "./contexts/TasksContext"
 import { BlogsProvider } from './contexts/BlogsContext';
+import { UsersProvider } from './contexts/UsersContext'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import PrivateRoute from './components/PrivateRoute';
@@ -11,6 +12,9 @@ import Layout from './pages/Layout';
 import Contact from './pages/Contact';
 import Blogs from './pages/Blogs';
 import NoPage from './pages/NoPage';
+import Users from './pages/Users';
+import EditUser from './pages/EditUser';
+import AddUser from './pages/AddUser';
 
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -45,6 +49,20 @@ export default function App() {
             <Route path="contact" element={<Contact />} />
           </Route>
 
+          <Route element={<PrivateRoute />}>
+            <Route path="user" element={<Users />} />
+          </Route>
+
+          <Route element={<PrivateRoute />}>
+            <Route path="user/adduser" element={<AddUser />} />
+          </Route>
+
+          <Route element={<PrivateRoute />}>
+            <Route path="user/:id" element={<EditUser />} />
+          </Route>
+
+          {/* TODO: make route for admin only */}
+
 
           {/* catch all invalid routing */}
           <Route path="*" element={<NoPage />} />
@@ -59,7 +77,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BlogsProvider>
     <TasksProvider>
-      <App />
+      <UsersProvider>
+        <App />
+      </UsersProvider>
     </TasksProvider>
   </BlogsProvider>
 );

@@ -4,8 +4,8 @@ import styles from '../modules/style.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import useLogout from "../hooks/useLogout";
-
-const API_URL = process.env.REACT_APP_API_URL
+import fetchService from "../services/fetchService";
+import showErrorService from "../services/showErrorService";
 
 const Task = memo(function Task({ task }) {
     console.log("[Task]")
@@ -31,16 +31,7 @@ const Task = memo(function Task({ task }) {
                 {isEditting ?
                     <button className={styles.button} onClick={async () => {
                         setIsEditting(false);
-                        let result = await fetch(API_URL + '/updatetodo/' + task.id, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
-                            },
-                            body: JSON.stringify({
-                                name: taskName
-                            })
-                        })
+                        let result = await fetchService('/updatetodo/' + task.id, 'PUT', { name: taskName });
 
                         if (result.ok) {
                             dispatch({
@@ -49,10 +40,11 @@ const Task = memo(function Task({ task }) {
                                 name: taskName
                             });
                         }
+                        else if (result.status === 401) {
+                            logout();
+                        }
                         else {
-                            if (result.status === 401)
-                                logout();
-                            console.log('edit failed')
+                            showErrorService(result);
                         }
 
 
@@ -62,13 +54,7 @@ const Task = memo(function Task({ task }) {
 
                 <button className={styles.button} style={{ marginLeft: "5px" }} onClick={async () => {
 
-                    let result = await fetch(API_URL + '/deletetodo/' + task.id, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
-                        }
-                    })
+                    let result = await fetchService('/deletetodo/' + task.id, 'DELETE', null);
 
                     if (result.ok) {
                         dispatch({
@@ -76,10 +62,11 @@ const Task = memo(function Task({ task }) {
                             id: task.id
                         })
                     }
-                    else{
-                        if (result.status === 401)
-                            logout();
-                        console.log('delete failed')
+                    else if (result.status === 401) {
+                        logout();
+                    }
+                    else {
+                        showErrorService(result);
                     }
                     
                 }}><FontAwesomeIcon icon={faX} style={{ color: "red" }} /></button>

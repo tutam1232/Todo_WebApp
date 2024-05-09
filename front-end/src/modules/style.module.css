@@ -5,7 +5,6 @@
     align-items: center;
     width: 30%;
     padding: 5px;
-    margin: 15px;
 }
 
 .task{
@@ -57,4 +56,19 @@
 .link{
     color: white;
     text-decoration: none;
+}
+
+.editUserForm{
+    display: grid;
+    width: 20vw;
+    grid-template-columns: 30% 70%;
+    color:white;
+}
+
+
+.customButton{
+    border-radius: 5px;
+    border: none;
+    height: 30px;
+    width:100px
 }

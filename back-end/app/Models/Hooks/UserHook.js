@@ -1,6 +1,7 @@
 'use strict'
 
-const Hash = use('Hash')
+const bcrypt = require('bcrypt')
+const Env = use('Env')
 
 const UserHook = module.exports = {}
 
@@ -14,7 +15,9 @@ const UserHook = module.exports = {}
  * @return {void}
  */
 UserHook.hashPassword = async (userInstance) => {
-  if (userInstance.dirty.password) {
-    userInstance.password = await Hash.make(userInstance.password)
+  
+  if(userInstance.dirty.password){
+    userInstance.password = userInstance.password = await bcrypt.hash(userInstance.password, Number(Env.get('SALT_ROUND')))
   }
+
 }

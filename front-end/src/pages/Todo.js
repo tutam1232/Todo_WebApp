@@ -1,78 +1,51 @@
 import TaskList from "../components/TaskList.js"
 import AddTask from "../components/AddTask.js"
-import { useTasksDispatch, useTasks } from "../contexts/TasksContext.js";
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useTasksDispatch } from "../contexts/TasksContext.js";
+import { useEffect } from "react";
 import useLogout from "../hooks/useLogout.js";
-const API_URL = process.env.REACT_APP_API_URL
+
+import fetchService from "../services/fetchService.js";
+import showErrorService from "../services/showErrorService.js";
+
+
 
 function Todo() {
 
     console.log("[Todo]")
+    const dispatch = useTasksDispatch();
+    const logout = useLogout();    
 
-    let dispatch = useTasksDispatch();
-    let tasks = useTasks()
-    const logout = useLogout();
+    useEffect(() => {
 
-    async function handleOnDragEnd(result) {
-
-        if (!result.destination) return;
-
-        const draggedTask = tasks[result.source.index]
-        const previousDropTask = tasks[result.destination.index]
-        const dragIdDatabase = draggedTask.id;
-        const dropIdDatabase = previousDropTask.id;
-
-
-        dispatch({
-            type: 'reorder_task',
-            dragIndex: result.source.index,
-            dropIndex: result.destination.index
-        })
-
-        let resultFetch = await fetch(API_URL + '/reorder' + `/${dragIdDatabase}` + `/${dropIdDatabase}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-            },
-        })
-
-        if (!resultFetch.ok) {
-            
-            dispatch({
-                type: 'reorder_task',
-                dragIndex: result.source.index,
-                dropIndex: result.destination.index
-            })
-            if (resultFetch.status === 401)
+        const getData = async () => {
+            const res = await fetchService('/gettodos', 'GET', null)
+            if (res.ok) {
+                const data = await res.json()
+                dispatch({
+                    type: 'set_tasks',
+                    tasks: data
+                })
+            }
+            else if (res.status === 401)
                 logout();
-
-            console.log('reorder fail')
+            else
+                showErrorService(res)
         }
 
+        getData()
 
-    }
+
+    }, [])
+
 
     return (
         <>
             <h1 style={{ textAlign: "center", color: "white", marginTop: "2%" }}>TODO LIST</h1>
 
             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><AddTask /></div>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                    <Droppable droppableId="tasks">
-                        {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps} >
-                                <TaskList />
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </div>
-
-            </DragDropContext>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <TaskList />
+            </div>
         </>
     );
 
