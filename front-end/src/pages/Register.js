@@ -3,6 +3,7 @@ import { useNavigate, Link, Navigate } from 'react-router-dom'
 import styles from '../modules/style.module.css'
 
 const API_URL = process.env.REACT_APP_API_URL
+const USERNAME_REGEX = process.env.REACT_APP_USERNAME_REGEX;
 
 
 const Register = () => {
@@ -18,6 +19,17 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    const usernameRegex = new RegExp(USERNAME_REGEX)
+
+    if (!usernameRegex.test(username)) {
+      alert('username must be 3 - 16 characters length and contain only letters, numbers, _, ., -');
+      return;
+    }
+
+    if (password == '') {
+      alert('password cannot be null')
+    }
 
 
     try {
