@@ -8,3 +8,4 @@
 
 ### Note
 - TodoDatabase.sql: unused
+- Realtime update on code changes using bind mount, anonymous volume
