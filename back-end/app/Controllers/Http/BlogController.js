@@ -7,8 +7,9 @@ class BlogController {
         this.blogService = new BlogService()
     }
 
-    async getBlogs({ request, response }) {
+    async getBlogs({ request, auth,response }) {
         try {
+            console.log(auth.current._instanceUser)
             let data = await this.blogService.getBlogs(request)
             return response.status(200).json(data)
 
