@@ -1,0 +1,67 @@
+services:
+  fe:
+    build: 
+      context: front-end
+      dockerfile: Dockerfile
+    networks:
+      - my-network
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:1999
+      REACT_APP_ACCESS_TOKEN_SECRET: access
+      REACT_APP_ACCESS_TOKEN_TIMEOUT: 100s
+      REACT_APP_USERNAME_REGEX: ^(?!\d)[a-zA-Z0-9._-]{3,16}$
+    depends_on:
+      - be
+
+
+  be:
+    build: 
+      context: back-end
+      dockerfile: Dockerfile
+    networks:
+      - my-network
+    ports:
+      - "1999:1999"
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "1999"
+      APP_URL: http://${HOST}:${PORT}
+      APP_KEY: ulQ3zGo4au2wq6OD8Fk7K5sqq76zxQCn
+      DB_CONNECTION: "pg"
+      DB_HOST: pg #this refers to the service "pg"
+      DB_PORT: "5432"
+      DB_DATABASE: TodoDatabase
+      DB_USER: postgres
+      DB_PASSWORD: password
+      SESSION_SECRET: cookie
+      HASH_DRIVER: bcrypt
+      SALT_ROUNDS: "10"
+      ENV_SILENT: "true"
+    depends_on:
+      - pg
+
+
+  pg:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: TodoDatabase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    networks:
+      - my-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./TodoDatabaseDocker.sql:/docker-entrypoint-initdb.d/TodoDatabaseDocker.sql
+
+
+networks:
+  my-network:
+
+
+
+volumes:
+  pgdata:

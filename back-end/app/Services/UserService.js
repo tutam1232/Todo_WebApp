@@ -37,6 +37,7 @@ class UserService {
                 throw ('wrong password')
             }
             const token = await auth.generate({ id: user.id })
+            
 
             const data = {
                 accessToken: token,
