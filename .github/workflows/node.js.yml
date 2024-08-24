@@ -12,12 +12,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Run docker-compose
-      run: docker-compose up --build -d
+      run: docker-compose up -d
 
     - name: Stop docker-compose
       run: docker-compose down -v
