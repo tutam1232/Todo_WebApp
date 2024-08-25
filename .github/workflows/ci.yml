@@ -37,11 +37,12 @@ jobs:
       run: npm install
       working-directory: ./front-end
 
-    - name: Run back-end
-      run: npm run backend-server
+    #- name: Build back-end # Adonis 4 doesn't support build
+      #run: npm run backend-server
 
-    - name: Run front-end
-      run: npm run frontend-server
+    - name: Build front-end
+      run: npm run build
+      working-directory: ./front-end
     
 
   compose:
