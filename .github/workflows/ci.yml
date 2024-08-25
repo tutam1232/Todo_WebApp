@@ -27,7 +27,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Create database
-      run: PGPASSWORD=password psql -U postgres ./TodoDatabaseDocker.sql
+      run: PGPASSWORD=password psql -U postgres -h localhost -f ./TodoDatabaseDocker.sql
 
     - name: Install dependencies in back-end folder
       run: npm install
