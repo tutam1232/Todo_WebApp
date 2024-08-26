@@ -1,11 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import App from ".";
+import App from "./App";
 
-test("renders login", () => {
-  const container = document.createElement("div");
-  container.id = "root";
-
-  render(<App />, { container: document.body.appendChild(container) });
-  const linkElement = screen.getByText(/Login/i);
-  expect(linkElement).toBeInTheDocument();
+test("renders Login", () => {
+  render(<App />);
+  const linkElements = screen.getAllByText(/Login/i);
+  linkElements.forEach((element) => {
+    expect(element).toBeInTheDocument();
+  });
 });
