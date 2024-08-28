@@ -3,8 +3,8 @@ services:
     build: 
       context: front-end
       dockerfile: Dockerfile
-    networks:
-      - my-network
+    # networks: # fe doesn't need network to communicate with be (cuz it interacts with be through the browser and be listens on 0.0.0.0 from docker machine, not through the same machine in docker)
+    #   - my-network
     ports:
       - "3000:3000"
     environment:
@@ -29,7 +29,7 @@ services:
     ports:
       - "1999:1999"
     environment:
-      HOST: "0.0.0.0"
+      HOST: "localhost"
       PORT: "1999"
       APP_URL: http://${HOST}:${PORT}
       APP_KEY: ulQ3zGo4au2wq6OD8Fk7K5sqq76zxQCn
