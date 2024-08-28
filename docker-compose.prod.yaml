@@ -2,7 +2,7 @@ services:
   fe:
     build: 
       context: front-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     # networks: # fe doesn't need network to communicate with be (cuz it interacts with be through the browser and be listens on 0.0.0.0 from docker machine, not through the same machine in docker)
     #   - my-network
     ports:
@@ -15,15 +15,12 @@ services:
       WATCHPACK_POLLING: "true"
     depends_on:
       - be
-    volumes:
-      - /todo/fe/node_modules
-      - ./front-end:/todo/fe
 
 
   be:
     build: 
       context: back-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     networks:
       - my-network
     ports:
@@ -45,9 +42,6 @@ services:
       ENV_SILENT: "true"
     depends_on:
       - pg
-    volumes:
-      - /todo/be/node_modules
-      - ./back-end:/todo/be
 
 
   pg:
